@@ -93,7 +93,7 @@ def code():
         else:
             exec("result = " + s)
             exec("print('>>>', result)")
-            exec("radio.send(str(result))")
+            exec("radio.send('$' + str(result))")  # Scroll output
             exec("display.scroll(str(result))")
     except:
         print('error')
@@ -119,5 +119,11 @@ radio.config(channel=16)
 while True:
     incoming = radio.receive()
     if incoming:
-        display.show(incoming)
+        if incoming[0] == '$':
+            # Scroll output
+            display.scroll(incoming[1:])
+        else:
+            # Sync keyboard display
+            display.show(incoming)
+
 '''
