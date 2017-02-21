@@ -2,14 +2,21 @@ from microbit import *
 from math import *
 import radio
 
-radio.on()
-radio.config(channel=16)
-alpha = '[abcdef ghijkl]'
-bet = '<Smnopqrstuvwxyz>'  # alphabet
+
+show_error_message = False
+loop_error_message = False
+
+
 num = ':01234567890.'
+alpha = '[abcdef ghijkl]'  # with a space in the middle
+bet = '<Smnopqrstuvwxyz>'  # alphabet
 operators = 'D,()+-*/="RI'
 p = print
 d = display.scroll  # make typing easier
+
+
+radio.on()
+radio.config(channel=16)
 
 
 def get_char():
@@ -23,7 +30,8 @@ def get_char():
             theta = atan(z / x) * 180 / pi
         if theta < 0:
             theta = 180 + theta
-        # map theta to characters on semisphere (in degrees) using calibrated formulae
+        # map theta to characters on semisphere (in degrees) using calibrated
+        # formulae
         if y < -300:
             i = num[min(int(abs(theta - 30) / 120 * len(num)), len(num) - 1)]
         elif y > 700:
@@ -64,7 +72,7 @@ def code():
             s += c.upper()
             caps_lock = False
         elif c == 'I':
-            # indentation
+            # indentation of 4 spaces
             s += '    '
         elif c == ' ':
             if s[-1] == ' ':
@@ -88,9 +96,10 @@ def code():
             exec("radio.send(str(result))")
             exec("display.scroll(str(result))")
     except:
-        eval("print('error')")
-        exec("radio.send('error')")
-        eval("display.scroll('error', wait=False, loop=True)")
+        print('error')
+        if show_error_message:
+            radio.send('error')
+        display.scroll('error', wait=show_error_message, loop=loop_error_message)
 
 
 idle = """\n\nPython 3.5.2 (v3.5.2:4def2a2901a5, Jun 26 2016, 10:47:25)
